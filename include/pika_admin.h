@@ -214,4 +214,15 @@ private:
   PikaClientConn* self_client_;
   virtual void DoInitial(PikaCmdArgsType &argv, const CmdInfo* const ptr_info);
 };
+
+class EchoCmd : public Cmd {
+public:
+  EchoCmd() {
+  }
+  virtual void Do();
+private:
+//   PikaClientConn* self_client_;
+  std::string message_;
+  virtual void DoInitial(PikaCmdArgsType &argvs, const CmdInfo* const ptr_info);
+};
 #endif

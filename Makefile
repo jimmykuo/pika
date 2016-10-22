@@ -6,7 +6,7 @@ include Makefile.global
 
 UNAME := $(shell if [ -f "/etc/redhat-release" ]; then echo "CentOS"; else echo "Ubuntu"; fi)
 
-OSVERSION := $(shell cat /etc/redhat-release | cut -d "." -f 1 | awk '{print $$NF}')
+OSVERSION := $(shell cat /etc/redhat-release 2>/dev/null | cut -d "." -f 1 | awk '{print $$NF}')
 
 ifeq ($(UNAME), Ubuntu)
   SO_DIR = $(CURDIR)/lib/ubuntu

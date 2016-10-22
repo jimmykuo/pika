@@ -65,7 +65,7 @@ void SlaveofCmd::Do() {
     // Stop rsync
     LOG(INFO) << "start slaveof, stop rsync first";
     slash::StopRsync(g_pika_conf->db_sync_path());
-    
+
     g_pika_server->RemoveMaster();
     res_.SetRes(CmdRes::kOk);
     return;
@@ -126,7 +126,7 @@ void TrysyncCmd::Do() {
     s.stage = SLAVE_ITEM_STAGE_ONE;
     gettimeofday(&s.create_time, NULL);
     s.sender = NULL;
-    
+
     LOG(INFO) << "Trysync, dont FindSlave, so AddBinlogSender";
     Status status = g_pika_server->AddBinlogSender(s, filenum_, pro_offset_);
     if (status.ok()) {
@@ -182,7 +182,7 @@ void BgsaveCmd::Do() {
   g_pika_server->Bgsave();
   const PikaServer::BGSaveInfo& info = g_pika_server->bgsave_info();
   char buf[256];
-  snprintf(buf, sizeof(buf), "+%s : %u: %lu", 
+  snprintf(buf, sizeof(buf), "+%s : %u: %lu",
       info.s_start_time.c_str(), info.filenum, info.offset);
   res_.AppendContent(buf);
 }
@@ -225,7 +225,7 @@ void PurgelogstoCmd::DoInitial(PikaCmdArgsType &argv, const CmdInfo* const ptr_i
     return;
   }
   std::string filename = slash::StringToLower(argv[1]);
-  if (filename.size() <= kBinlogPrefixLen || 
+  if (filename.size() <= kBinlogPrefixLen ||
       kBinlogPrefix != filename.substr(0, kBinlogPrefixLen)) {
     res_.SetRes(CmdRes::kInvalidParameter);
     return;
@@ -470,7 +470,7 @@ void InfoCmd::Do() {
       InfoData(info);
       break;
     default:
-      //kInfoErr is nothing 
+      //kInfoErr is nothing
       break;
   }
 
@@ -501,7 +501,7 @@ void InfoCmd::InfoServer(std::string &info) {
   tmp_stream << "uptime_in_seconds:" << (current_time_s - g_pika_server->start_time_s()) << "\r\n";
   tmp_stream << "uptime_in_days:" << (current_time_s / (24*3600) - g_pika_server->start_time_s() / (24*3600) + 1) << "\r\n";
   tmp_stream << "config_file:" << g_pika_conf->conf_path() << "\r\n";
-  
+
   info.append(tmp_stream.str());
 }
 
@@ -531,7 +531,7 @@ void InfoCmd::InfoStats(std::string &info) {
   if (is_scaning) {
     tmp_stream << current_time_s - key_scan_info.start_time;
   }
-  tmp_stream << "\r\n"; 
+  tmp_stream << "\r\n";
   tmp_stream << "is_compact:" << g_pika_server->db()->GetCurrentTaskType() << "\r\n";
 
   info.append(tmp_stream.str());
@@ -548,7 +548,7 @@ void InfoCmd::InfoReplication(std::string &info) {
     case PIKA_ROLE_MASTER | PIKA_ROLE_SLAVE : tmp_stream << "MASTER/SLAVE)\r\nrole:slave\r\n"; break;
     default: info.append("ERR: server role is error\r\n"); return;
   }
-  
+
   std::string slaves_list_str;
   //int32_t slaves_num = g_pika_server->GetSlaveListString(slaves_list_str);
   switch (host_role) {
@@ -569,7 +569,7 @@ void InfoCmd::InfoReplication(std::string &info) {
     case PIKA_ROLE_MASTER :
       tmp_stream << "connected_slaves:" << g_pika_server->GetSlaveListString(slaves_list_str) << "\r\n" << slaves_list_str;
   }
-  
+
   info.append(tmp_stream.str());
 }
 
@@ -610,13 +610,13 @@ void InfoCmd::InfoLog(std::string &info) {
   tmp_stream << "log_size:" << log_size << "\r\n";
   tmp_stream << "log_size_human:" << (log_size >> 20) << "M\r\n";
   tmp_stream << "safety_purge:" << (g_pika_server->GetPurgeWindow(purge_max) ?
-      kBinlogPrefix + std::to_string(static_cast<int32_t>(purge_max)) : "none") << "\r\n"; 
+      kBinlogPrefix + std::to_string(static_cast<int32_t>(purge_max)) : "none") << "\r\n";
   tmp_stream << "expire_logs_days:" << g_pika_conf->expire_logs_days() << "\r\n";
   tmp_stream << "expire_logs_nums:" << g_pika_conf->expire_logs_nums() << "\r\n";
   uint32_t filenum;
   uint64_t offset;
   g_pika_server->logger_->GetProducerStatus(&filenum, &offset);
-  tmp_stream << "binlog_offset:" << filenum << " " << offset << "\r\n"; 
+  tmp_stream << "binlog_offset:" << filenum << " " << offset << "\r\n";
 
   info.append(tmp_stream.str());
   return;
@@ -624,9 +624,9 @@ void InfoCmd::InfoLog(std::string &info) {
 
 void InfoCmd::InfoData(std::string &info) {
   std::stringstream tmp_stream;
-  
+
   int64_t db_size = slash::Du(g_pika_conf->db_path());
-  tmp_stream << "# Data" << "\r\n"; 
+  tmp_stream << "# Data" << "\r\n";
   tmp_stream << "db_size:" << db_size << "\r\n";
   tmp_stream << "db_size_human:" << (db_size >> 20) << "M\r\n";
   tmp_stream << "compression:" << g_pika_conf->compression() << "\r\n";
@@ -679,7 +679,7 @@ void ConfigCmd::DoInitial(PikaCmdArgsType &argv, const CmdInfo* const ptr_info) 
     res_.SetRes(CmdRes::kErrOther, "CONFIG subcommand must be one of GET, SET, RESETSTAT, REWRITE");
     return;
   }
-  config_args_v_.assign(argv.begin()+1, argv.end()); 
+  config_args_v_.assign(argv.begin()+1, argv.end());
   return;
 }
 
@@ -1063,4 +1063,18 @@ void MonitorCmd::Do() {
   self_thread->pink_epoll()->PinkDelEvent(self_client_->fd());
   g_pika_server->monitor_thread()->AddMonitorClient(self_client_);
   g_pika_server->monitor_thread()->AddMonitorMessage("OK");
+}
+
+void EchoCmd::DoInitial(PikaCmdArgsType &argv, const CmdInfo* const ptr_info) {
+  if (argv.size() != 2) {
+    res_.SetRes(CmdRes::kWrongNum, kCmdNameEcho);
+    return;
+  }
+  operation_ = argv[1];
+}
+
+void EchoCmd::Do(){
+   // res_.SetRes(CmdRes::kOk);
+   res_.AppendStringLen(operation_.size());
+   res_.AppendContent(operation_);
 }
