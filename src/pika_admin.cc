@@ -1070,11 +1070,11 @@ void EchoCmd::DoInitial(PikaCmdArgsType &argv, const CmdInfo* const ptr_info) {
     res_.SetRes(CmdRes::kWrongNum, kCmdNameEcho);
     return;
   }
-  operation_ = argv[1];
+  message_ = argv[1];
 }
 
 void EchoCmd::Do(){
    // res_.SetRes(CmdRes::kOk);
-   res_.AppendStringLen(operation_.size());
-   res_.AppendContent(operation_);
+   res_.AppendStringLen(message_.size());
+   res_.AppendContent(message_);
 }

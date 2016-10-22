@@ -48,7 +48,7 @@ void InitCmdInfoTable() {
 
   //Echo
   CmdInfo* echoptr = new CmdInfo(kCmdNameEcho, -1, kCmdFlagsRead);
-  cmd_infos.insert(std::pair<std::string, CmdInfo*>(kCmdNameEcho, infoptr));
+  cmd_infos.insert(std::pair<std::string, CmdInfo*>(kCmdNameEcho, echoptr));
 
   //Kv
   ////SetCmd
